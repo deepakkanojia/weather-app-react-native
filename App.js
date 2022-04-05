@@ -1,20 +1,51 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, ImageBackground } from 'react-native';
+import React,{useState,useEffect} from 'react';
+import DataAndTime from './components/DataAndTime';
+import WeatherScroll from './components/WeatherScroll';
+const API_KEY = 'f53e27cace17085fcf1d4b2b22262b7a';
+const img = require('./assets/image.png');
 
 export default function App() {
+  const [data,setData] = useState({});
+  useEffect(()=>{
+    navigator.geolocation.getCurrentPosition((success) => {
+        
+      let {latitude, longitude } = success.coords;
+      fetchDatafromApi(latitude,longitude)
+
+      
+    },(err)=>{
+      if(err){
+        fetchDatafromApi("53.4239","-7.9407")
+      }
+    })
+
+  },[])
+  const fetchDatafromApi = (latitude,longitude)=>{
+    fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=${latitude}&lon=${longitude}&exclude=hourly,minutely&units=metric&appid=${API_KEY}`).then(res => res.json()).then(data => {
+
+      console.log(data)
+      
+      })
+  }
   return (
+    <ImageBackground source={img} style={styles.image}>
     <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
+      <DataAndTime/>
+      <WeatherScroll/>  
     </View>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flex: 1, 
   },
+  image:{
+    flex:1,
+    resizeMode:"cover",
+    justifyContent:"center"
+  }
 });
