@@ -1,28 +1,39 @@
 import React from 'react'
 import  {ScrollView,View,Image,Text,StyleSheet} from 'react-native'
 import FutureForcast from './FutureForcast'
+import moment from 'moment-timezone'
 
-const WeatherScroll = () => {
+const WeatherScroll = ({weatherData}) => {
   return (
     <ScrollView horizontal={true} style={styles.scrollView}>
-        <CurrentTemp/>
-        <FutureForcast/>
+        <CurrentTemp data={weatherData && weatherData.length > 0 ? weatherData[0]:{}}/>
+        <FutureForcast data={weatherData}/>
     </ScrollView>
   )
 }
 
-const CurrentTemp = () =>{
-    const img = {uri:'http://openweathermap.org/img/wn/10d@2x.png'}
-    return(
-        <View style={styles.TempContainer}>
-            <Image source={img} style={styles.image}/>
-                <View style={styles.otherContainer}>
-                    <Text style={styles.day} >Sunday</Text>
-                    <Text style={styles.temp}>Night -27.9&#176;C</Text>
-                    <Text style={styles.temp}>Day -28.6&#176;C</Text>
-                </View>
-        </View>
-    )
+const CurrentTemp = ({data}) =>{
+    if(data && data.weather){
+        const img = {uri:'http://openweathermap.org/img/wn/'+data.weather[0].icon+'@4x.png'}
+        return(
+            <View style={styles.TempContainer}>
+                <Image source={img} style={styles.image}/>
+                    <View style={styles.otherContainer}>
+                        <Text style={styles.day} >{moment(data.dt * 1000).format('dddd')}</Text>
+                        <Text style={styles.temp}>Night - {data.temp.night}&#176;C</Text>
+                        <Text style={styles.temp}>Day - {data.temp.day}&#176;C</Text>
+                    </View>
+            </View>
+        ) 
+    }
+    else{
+        return(
+            <View>
+
+            </View>
+        )
+    }
+    
 }
 
 const styles = StyleSheet.create({

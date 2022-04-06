@@ -1,34 +1,21 @@
 import React,{useEffect,useState} from 'react'
 import { SafeAreaView,View,Text,StyleSheet,TextInput } from 'react-native'
+import moment from 'moment-timezone';
 const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
 const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-const UseTextInput = () => {
-    const [text, onChangeText] = React.useState("");
-  
-    return (
-      <SafeAreaView>
-        <TextInput
-          style={styles.input}
-          onChangeText={onChangeText}
-          value={text}
-          placeholder="Enter the City Name"
 
-        />
-      </SafeAreaView>
-    );
-  };
 
 const WeatherItem = ({title,value,unit}) => {
     return(
         <View style={styles.weatherContent}>
             <Text style={styles.weatherContenttitle}>{title}</Text>
             <Text style={styles.weatherContentvalue}>{value}{unit}</Text>
-
+        
         </View>
     )
 }
-const DataAndTime = () => {
+const DataAndTime = ({current,lat,lon,timezone}) => {
     //use of react hooks
     const [date,setDate] = useState('')
     const [time,setTime] = useState('')
@@ -54,19 +41,21 @@ const DataAndTime = () => {
   return (
 <View style={styles.container}>
     <View>
-       <UseTextInput/>
       <View><Text style={styles.heading}>{time}</Text></View>
       <View><Text style={styles.subheading}>{date}</Text></View>
         <View style={styles.WeatherItemContainer}>
-            <WeatherItem title="Humidity" value="56" unit="%"/>
-            <WeatherItem title="pressure" value="1000" unit="hPA"/>
-            <WeatherItem title="Sunrise" value="12:00" unit="am"/>
-            <WeatherItem title="Sunset" value="02:00" unit="pm"/>
+            <WeatherItem title="Humidity" value={current ? current.humidity : ""} unit="%"/>
+            <WeatherItem title="pressure" value={current ? current.pressure: ""} unit="hPA"/>
+            {/* used moment library over here */}
+            <WeatherItem title="Sunrise" value={current ? moment.tz(current.sunrise*1000,timezone).format('HH:MM'): ""} unit="am"/>
+            <WeatherItem title="Sunset" value={current ? moment.tz(current.sunset*1000,timezone).format('HH:MM'): ""} unit="pm"/>
+            <WeatherItem title="Feels Like" value={current ? current.feels_like : ""} unit="C"/>
+
         </View>
     </View>
     <View style={styles.rightAlign}>
-        <Text style={styles.timezone}>Asia/Kolkata</Text>
-        <Text style={styles.latlong}>4.22N 6.77S</Text>
+        <Text style={styles.timezone}>{timezone}</Text>
+        <Text style={styles.latlong}>{lat}N{lon}E</Text>
     </View>
 </View>
   )
